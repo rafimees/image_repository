@@ -1,0 +1,30 @@
+version: "3.7" 
+services:
+  registry_server:
+    image: registry:2
+    container_name: dockerhub-srv
+    ports: 
+      - 5000:5000
+      - 443:443
+    volumes:
+      - ./registry:/var/lib/registry
+      - ./certs:/certs
+    restart: unless-stopped
+    environment:
+      - REGISTRY_HTTP_ADDR=0.0.0.0:443
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.cert
+      - REGISTRY_HTTP_TLS_KEY=/certs/domain.key
+  # networks:
+  #     - dockerHub-net
+
+  registry-web:
+    image: hyper/docker-registry-web
+    container_name: dockerHub-web
+    restart: unless-stopped
+    environment:
+      - REGISTRY_URL=https://172.72.250.250/v2
+      - REGISTRY_TRUST_ANY_SSL=true
+    ports:
+      - 80:8080
+    # networks:
+    #   - dockerHub-net
